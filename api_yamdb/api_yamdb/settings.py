@@ -29,7 +29,6 @@ LOCAL_APPS = [
     'reviews',
     'api_yamdb',
     'api',
-    
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
