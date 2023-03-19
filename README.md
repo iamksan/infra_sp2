@@ -1,80 +1,199 @@
-# API_YAMDB
-REST API проект для сервиса YaMDb — сбор отзывов о фильмах, книгах или музыке.
-
-## Описание
+# api_yamdb
 
 Проект YaMDb собирает отзывы пользователей на произведения.
-Произведения делятся на категории: «Книги», «Фильмы», «Музыка».
-Список категорий  может быть расширен (например, можно добавить категорию «Изобразительное искусство» или «Ювелирка»).
-### Как запустить проект:
 
-Все описанное ниже относится к ОС Linux.
-Клонируем репозиторий и переходим в него:
-```bash
-git clone git@github.com:iamksan/infra_sp2.git
-cd infra_sp2
-cd api_yamdb
+## Описание
+Проект YaMDb собирает отзывы пользователей на различные произведения.
+
+## Как запустить проект
+
+>*Клонировать репозиторий и перейти в него в командной строке:*
+
+
+* ```bash
+  git clone git@github.com:IlDezmond/api_yamdb.git
+  ```
+
+* ```bash
+  cd api_yamdb/
+  ```
+
+>*Cоздать и активировать виртуальное окружение:*
+
+* ```bash
+  python -m venv env
+  ```
+
+* *Если у вас Linux/macOS*
+
+* ```bash
+   source env/bin/activate
+   ```
+
+* *Если у вас windows*
+
+* ```bash
+  source env/scripts/activate
+  ```
+
+* ```bash
+  python -m pip install --upgrade pip
+  ```
+
+>*Установить зависимости из файла requirements.txt:*
+
+* ```bash
+  pip install -r requirements.txt
+  ```
+
+* ```bash
+  cd api_yamdb/
+  ```
+
+>*Выполнить миграции:*
+
+* ```bash
+  python manage.py migrate
+  ```
+
+>*Запустить проект:*
+
+* ```bash
+  python manage.py runserver
+  ```
+
+>*Для загрузки тестовых данных в БД, выполните команду:*
+
+* ```bash
+    python manage.py load_csv
+  ```
+
+## Примеры работы с API
+
+### GET запрос. Получение списка произведений
+
+```URL
+http://127.0.0.1:8000/api/v1/titles/
 ```
 
-Создаем и активируем виртуальное окружение:
-```bash
-python3 -m venv venv
-source /venv/bin/activate (source /venv/Scripts/activate - для Windows)
-python -m pip install --upgrade pip
+```JSON
+    {
+        "count": 0,
+        "next": "string",
+        "previous": "string",
+        "results": [
+            {
+                "id": 0,
+                "name": "string",
+                "year": 0,
+                "rating": 0,
+                "description": "string",
+                "genre": [
+                    {
+                        "name": "string",
+                        "slug": "string"
+                    }
+                ],
+                "category": {
+                    "name": "string",
+                    "slug": "string"
+                }
+            }
+        ]
+    }
 ```
 
-Ставим зависимости из requirements.txt:
-```bash
-pip install -r requirements.txt
+### POST запрос. Добавление произведения. Права доступа: Администратор
+
+```URL
+http://127.0.0.1:8000/api/v1/titles/
 ```
 
-Переходим в папку с файлом docker-compose.yaml:
-```bash
-cd infra
+>*request:*
+
+```JSON
+    {
+        "name": "string",
+        "year": 0,
+        "description": "string",
+        "genre": [
+            "string"
+        ],
+        "category": "string"
+    }
 ```
 
-Поднимаем контейнеры (infra_db_1, infra_web_1, infra_nginx_1):
-```bash
-docker-compose up -d --build
+>*response:*
+
+```JSON
+    {
+        "id": 0,
+        "name": "string",
+        "year": 0,
+        "rating": 0,
+        "description": "string",
+        "genre": [
+            {
+                "name": "string",
+                "slug": "string"
+            }
+        ],
+        "category": {
+            "name": "string",
+            "slug": "string"
+        }
+    }
 ```
 
-Выполняем миграции:
-```bash
-docker-compose exec web python manage.py makemigrations reviews
-```
-```bash
-docker-compose exec web python manage.py migrate
+### POST запрос. Регистрация нового пользователя
+
+```URL
+http://127.0.0.1:8000/api/v1/auth/signup/
 ```
 
-Создаем суперпользователя:
-```bash
-docker-compose exec web python manage.py createsuperuser
+>*request:*
+
+```JSON
+    {
+        "email": "user@example.com",
+        "username": "string"
+    }
 ```
 
-Србираем статику:
-```bash
-docker-compose exec web python manage.py collectstatic --no-input
+>*response:*
+
+```JSON
+    {
+        "email": "string",
+        "username": "string"
+    }
 ```
 
-Создаем дамп базы данных (нет в текущем репозитории):
-```bash
-docker-compose exec web python manage.py dumpdata > dumpPostrgeSQL.json
+### POST запрос. Получение JWT-токена пользователем для доступа к API
+
+```URL
+http://127.0.0.1:8000/api/v1/auth/token/
 ```
 
-Останавливаем контейнеры:
-```bash
-docker-compose down -v
+>*request:*
+
+```JSON
+    {
+        "username": "string",
+        "confirmation_code": "string"
+    }
 ```
 
-### Шаблон наполнения .env (не включен в текущий репозиторий) расположенный по пути infra/.env
-```
-DB_ENGINE=django.db.backends.postgresql
-DB_NAME=postgres
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-DB_HOST=db
-DB_PORT=5432
+>*response:*
+
+```JSON
+    {
+        "token": "string"
+    }
 ```
 
-### Документация API YaMDb
-Документация доступна по эндпойнту: http://localhost/redoc/
+### Полная документация находится по адресу
+
+```URL
+http://127.0.0.1:8000/redoc/
+```
